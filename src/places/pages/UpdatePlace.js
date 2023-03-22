@@ -57,19 +57,21 @@ const UpdatePlace = () => {
     },false);
 
     useEffect(() => {
-        setFormData(
-            {
-                title: {
-                    value: identifiedPlace.title,
-                    isValid: true
+        if (identifiedPlace) {
+            setFormData(
+                {
+                    title: {
+                        value: identifiedPlace.title,
+                        isValid: true
+                    },
+                    description: {
+                        value: identifiedPlace.description,
+                        isValid: true
+                    }
                 },
-                description: {
-                    value: identifiedPlace.description,
-                    isValid: true
-                }
-            },
-            true
-        );
+                true
+            );
+        }
         setIsLoading(false);
     }, [setFormData, identifiedPlace]);
 

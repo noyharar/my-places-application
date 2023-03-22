@@ -1,4 +1,5 @@
-import React, {Fragment, useState} from 'react';
+import React, {Fragment, useState, useContext} from 'react';
+import {AuthContext} from "../../shared/context/auth-context";
 import './PlaceItem.css';
 import Card from "../../shared/components/UIElements/Card";
 import Button from "../../shared/components/FormElements/Button";
@@ -6,6 +7,8 @@ import Modal from "../../shared/components/UIElements/Modal";
 import Map from "../../shared/components/UIElements/Map";
 
 const PlaceItem = props => {
+    const auth = useContext(AuthContext);
+
     const [showMap, setShowMap] = useState(false);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const openMapHandler = () => setShowMap(true);
@@ -43,10 +46,10 @@ const PlaceItem = props => {
                 header="Are you sure?"
                 footerclase="place-item__modal-actions"
                 footer={
-                <Fragment>
-                    <Button inverse onClick={cancelDeleteHandler}>CANCEL</Button>
-                    <Button danger onClick={confirmDeleteHandler}>DELETE</Button>
-                </Fragment>}>
+                    <Fragment>
+                        <Button inverse onClick={cancelDeleteHandler}>CANCEL</Button>
+                        <Button danger onClick={confirmDeleteHandler}>DELETE</Button>
+                    </Fragment>}>
                 <p>Are you sure that you want to proceed and delete this place?</p>
             </Modal>
             <li className="place-item">
@@ -61,8 +64,12 @@ const PlaceItem = props => {
                     </div>
                     <div className="place-item__actions">
                         <Button onClick={openMapHandler} inverse>VIEW ON MAP</Button>
-                        <Button to={`/places/${props.id}`}>EDIT</Button>
-                        <Button danger onClick={showDeleteWarningHandler}>DELETE</Button>
+                        {auth.isLoggedIn && (
+                            <Button to={`/places/${props.id}`}>EDIT</Button>
+                        )}
+                        {auth.isLoggedIn && (
+                            <Button danger onClick={showDeleteWarningHandler}>DELETE</Button>
+                        )}
                     </div>
                 </Card>
             </li>
