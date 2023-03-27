@@ -3,13 +3,15 @@ const placesRoutes = require('./routes/places-routes');
 const usersRoutes = require('./routes/users-routes');
 const mongoose = require('mongoose');
 // const connectDB =require ("./db.js");
-
+const cors = require("cors");
 require('dotenv').config();
 // connectDB();
 const express = require('express');
 
 const app = express();
 app.use(express.json());
+app.use(cors());
+
 
 app.use('/api/places', placesRoutes); // => /api/places...
 app.use('/api/users', usersRoutes); // => /api/places...
