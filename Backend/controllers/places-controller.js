@@ -5,6 +5,8 @@ const getCoordsForAddress = require('../util/location');
 const Place = require('../models/place');
 const User = require('../models/user');
 const mongoose = require('mongoose');
+const fs = require('fs');
+
 
 let DUMMY_PLACES = [
     {
@@ -96,7 +98,7 @@ const createPlace = async (req, res, next) => {
         description,
         address,
         location: coordinates,
-        image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Empire_State_Building_%28aerial_view%29.jpg/400px-Empire_State_Building_%28aerial_view%29.jpg',
+        image: req.file.path,
         creator
     });
     let user;
@@ -116,8 +118,8 @@ const createPlace = async (req, res, next) => {
         const session = await mongoose.startSession();
         session.startTransaction();
         await createdPlace.save({session:session});
-        user.places.push(createdPlace)
-        await user.save({session: session})
+        user.places.push(createdPlace);
+        await user.save({session: session});
         await session.commitTransaction();
     } catch (err) {
         const error = new HttpError(
@@ -145,6 +147,13 @@ const updatePlace = async (req, res, next) => {
         const error = new HttpError(
             'Something wrong - cant find place to update',
             500
+        );
+        return next(error);
+    }
+    if(place.creator.toString() !== req.userData.userId){
+        const error = new HttpError(
+            'You are not allowed to edit this place',
+            401
         );
         return next(error);
     }
@@ -185,6 +194,14 @@ const deletePlace = async (req, res, next) => {
         );
         return next(error);
     }
+    if(place.creator.id!== req.userData.userId){
+        const error = new HttpError(
+            'You are not allowed to delete this place',
+            401
+        );
+        return next(error);
+    }
+    const imagePath = place.image;
     try {
         const session = await mongoose.startSession();
         session.startTransaction();
@@ -199,6 +216,9 @@ const deletePlace = async (req, res, next) => {
         );
         return next(error);
     }
+    fs.unlink(imagePath, (err) => {
+        console.log(err)
+    });
     res.status(200).json({message: `${placeId} deleted`});
 
 

@@ -2,15 +2,17 @@ const HttpError = require('./models/http-error');
 const placesRoutes = require('./routes/places-routes');
 const usersRoutes = require('./routes/users-routes');
 const mongoose = require('mongoose');
-// const connectDB =require ("./db.js");
 const cors = require("cors");
+const fs = require('fs');
 require('dotenv').config();
-// connectDB();
 const express = require('express');
+const path = require('path');
 
 const app = express();
 app.use(express.json());
 app.use(cors());
+
+app.use('/uploads/images', express.static(path.join('uploads','images')));
 
 
 app.use('/api/places', placesRoutes); // => /api/places...
@@ -22,6 +24,11 @@ app.use((req, res, next) => {
 });
 
 app.use((error, req, res, next) => {
+    if(req.file){
+        fs.unlink(req.file.path, (err) => {
+            console.log(err)
+        });
+    }
     if (res.headerSent) {
         return next(error);
     }

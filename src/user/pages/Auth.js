@@ -42,26 +42,22 @@ const Auth = () => {
                     {
                         'Content-Type': 'application/json'
                     });
-                auth.login(response_data.user.id);
+                auth.login(response_data.userId, response_data.token);
             }
-            catch (err) {
-            }
+            catch (err) {}
         } else {
             try {
+                const formData = new FormData();
+                formData.append('email', formState.inputs.email.value);
+                formData.append('name', formState.inputs.name.value);
+                formData.append('password', formState.inputs.password.value);
+                formData.append('image', formState.inputs.image.value);
                 const response_data =  await sendRequest(
                     'http://localhost:5000/api/users/signup',
                     'POST',
-                    JSON.stringify({
-                            name: formState.inputs.name.value,
-                            email: formState.inputs.email.value,
-                            password: formState.inputs.password.value
-                        },
-                        {
-                            'Content-Type': 'application/json'
-                        }
-                    )
+                    formData
                 );
-                auth.login();
+                auth.login(response_data.userId, response_data.token);
             }
             catch (err) {
             }
@@ -80,16 +76,16 @@ const Auth = () => {
                 {
                     ...formState.inputs,
                     name: {
-                    value: '',
-                    isValid: false
+                        value: '',
+                        isValid: false
+                    },
+                    image: {
+                        value: null,
+                        isValid: false
+                    }
                 },
-                image: {
-                    value: null,
-                    isValid: false
-                }
-            },
-            false
-        );
+                false
+            );
         }
         setIsLoginMode(prevMode => !prevMode)
     };
