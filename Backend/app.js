@@ -36,7 +36,7 @@ app.use((error, req, res, next) => {
     res.json({message: error.message || 'An unknown error occurred!'});
 });
 mongoose
-    .connect(process.env.MONGO_URI)
+    .connect(`${process.env.MONGO_URI}`)
     .then(() => {
         app.listen(5000);
     })
