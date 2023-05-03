@@ -83,8 +83,8 @@ const createPlace = async (req, res, next) => {
         );
     }
 
-    const { title, description, address, creator } = req.body;
-
+    let { title, description, address } = req.body;
+    let creator = req.userData.userId;
     let coordinates;
     try {
         coordinates = await getCoordsForAddress(address);
